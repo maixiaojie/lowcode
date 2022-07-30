@@ -33,6 +33,8 @@ import {
 import assets from './assets.json';
 import schema from './schema.json';
 
+import { PluginSave } from 'src/plugins/save';
+
 export default async function registerPlugins() {
   await plugins.register(ManualPlugin);
 
@@ -263,4 +265,5 @@ export default async function registerPlugins() {
   };
   customSetter.pluginName = 'customSetter';
   await plugins.register(customSetter);
+  await plugins.register(PluginSave);
 }
