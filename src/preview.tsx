@@ -8,6 +8,7 @@ import { createFetchHandler } from '@alilc/lowcode-datasource-fetch-handler'
 
 import { getProjectSchemaFromLocalStorage, getPackagesFromLocalStorage } from './universal/utils';
 import { getUrlParams } from './utils/qs';
+import {OSS_BASE_URL} from 'src/utils/constants';
 
 // const getScenarioName = function() {
 //   if (location.search) {
@@ -28,11 +29,11 @@ const SamplePreview = () => {
 
   useEffect(() => {
     const getPackage = async () => {
-      const result = await (await fetch('https://tracys.oss-cn-chengdu.aliyuncs.com/assets.json')).json();
+      const result = await (await fetch(`${OSS_BASE_URL}/assets.json`)).json();
       packages = result?.packages;
     }
     const getProjectSchema = async () => {
-      const result = await (await fetch(`https://tracys.oss-cn-chengdu.aliyuncs.com/schema/${page}.json`)).json();
+      const result = await (await fetch(`${OSS_BASE_URL}/schema/${page}.json`)).json();
       projectSchema = JSON.parse(result);
     }
     const init_page = async () => {

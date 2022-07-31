@@ -1,8 +1,12 @@
 import React from "react";
-import { Button, Table, Box, Dialog, Form, Field, Input, Select } from '@alifd/next';
+import { Button, Table, Box, Dialog, Form, Field, Input, Message } from '@alifd/next';
 import './index.scss';
 
 const { useState, useEffect } = React;
+
+import { savePageInfo, getPageList } from 'src/api/page';
+import { Page } from "src/types/schema";
+import { OSS_BASE_URL } from "src/utils/constants";
 
 const tableDataSource = [{
     id: '1',
@@ -20,13 +24,22 @@ const Pages: React.FC = (props) => {
 
     const field = Field.useField({
         values: {
-            pageName: '',
+            page_name: '',
             page: '',
+            schema_url: '',
         },
-      });
+    });
 
     useEffect(() => {
-        setData(tableDataSource);
+        const getData = async () => {
+            const result = await getPageList()
+            const { data } = result;
+            if(Array.isArray(data)) {
+                setData(data);
+            }
+            console.log(result)
+        }
+        getData();
     }, []);
 
     const openAddForm = () => {
@@ -38,10 +51,21 @@ const Pages: React.FC = (props) => {
     const submit = async () => {
         const { errors } = await field.validatePromise();
         if (errors && errors.length > 0) {
-          return;
+            return;
         }
-        const values = field.getValues()
+        const values: Page = field.getValues()
         console.log(values);
+        const { page } = values;
+        try {
+            const res = await savePageInfo({
+                ...values,
+                schema_url: `${OSS_BASE_URL}/schema/${page}.json`
+            });
+            console.log(res);
+        } catch (e) {
+            console.log(e);
+            Message.error('保存失败');
+        }
     }
 
     return <>
@@ -64,7 +88,7 @@ const Pages: React.FC = (props) => {
         >
             <Form field={field} fullWidth style={{ paddingLeft: 40, paddingRight: 40 }}>
                 <Form.Item label="页面名称" required requiredMessage="请输入页面名称">
-                    <Input name="pageName" placeholder="请输入页面名称" />
+                    <Input name="page_name" placeholder="请输入页面名称" />
                 </Form.Item>
                 <Form.Item label="page" required requiredMessage="请输入page">
                     <Input name="page" placeholder="请输入page" />
