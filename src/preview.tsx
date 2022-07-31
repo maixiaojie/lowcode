@@ -1,5 +1,5 @@
 import ReactDOM from 'react-dom';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Loading } from '@alifd/next';
 import { buildComponents, assetBundle, AssetLevel, AssetLoader } from '@alilc/lowcode-utils';
 import ReactRenderer from '@alilc/lowcode-react-renderer';
@@ -7,21 +7,47 @@ import { injectComponents } from '@alilc/lowcode-plugin-inject';
 import { createFetchHandler } from '@alilc/lowcode-datasource-fetch-handler'
 
 import { getProjectSchemaFromLocalStorage, getPackagesFromLocalStorage } from './universal/utils';
+import { getUrlParams } from './utils/qs';
 
-const getScenarioName = function() {
-  if (location.search) {
-   return new URLSearchParams(location.search.slice(1)).get('scenarioName') || 'index'
-  }
-  return 'index';
+// const getScenarioName = function() {
+//   if (location.search) {
+//    return new URLSearchParams(location.search.slice(1)).get('scenarioName') || 'index'
+//   }
+//   return 'index';
+// }
+
+const page = getUrlParams('page');
+let packages: [] = [];
+let projectSchema = {
+  // componentsMap: [],
+  // componentsTree: []
 }
 
 const SamplePreview = () => {
   const [data, setData] = useState({});
 
+  useEffect(() => {
+    const getPackage = async () => {
+      const result = await (await fetch('https://tracys.oss-cn-chengdu.aliyuncs.com/assets.json')).json();
+      packages = result?.packages;
+    }
+    const getProjectSchema = async () => {
+      const result = await (await fetch(`https://tracys.oss-cn-chengdu.aliyuncs.com/schema/${page}.json`)).json();
+      projectSchema = JSON.parse(result);
+    }
+    const init_page = async () => {
+      await getPackage();
+      await getProjectSchema();
+      init();
+    }
+    init_page();
+  }, []);
+
   async function init() {
-    const scenarioName = getScenarioName();
-    const packages = getPackagesFromLocalStorage(scenarioName);
-    const projectSchema = getProjectSchemaFromLocalStorage(scenarioName);
+    // const scenarioName = getScenarioName();
+    // const packages = getPackagesFromLocalStorage();
+    // const projectSchema = getProjectSchemaFromLocalStorage();
+    console.log(packages, projectSchema);
     const { componentsMap: componentsMapArray, componentsTree } = projectSchema;
     const componentsMap: any = {};
     componentsMapArray.forEach((component: any) => {

@@ -12,11 +12,12 @@ function post(url: string, json: any) {
             })
             .then(res => res.json())
             .then(json => {
+                console.log(json);
                 if (json.code === 1) {
                     console.log(json.message)
-                    reject(json.message)
+                    reject(json)
                 } else {
-                    resolve(json.message)
+                    resolve(json)
                 }
             })
             .catch(err => {
@@ -35,9 +36,9 @@ function get(url: string) {
         .then(json => {
             if (json.code === 1) {
                 console.log(json.message)
-                reject(json.message)
+                reject(json)
             } else {
-                resolve(json.message)
+                resolve(json)
             }
         })
         .catch(err => {

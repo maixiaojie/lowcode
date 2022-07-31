@@ -149,7 +149,7 @@ export const preview = (scenarioName: string = 'index') => {
   saveSchema(scenarioName);
   setTimeout(() => {
     const search = location.search ? `${location.search}&scenarioName=${scenarioName}` : `?scenarioName=${scenarioName}`;
-    window.open(`./preview.html${search}`);
+    window.open(`./page${search}`);
   }, 500);
 };
 
